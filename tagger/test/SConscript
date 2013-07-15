@@ -1,0 +1,13 @@
+
+env = Environment()
+env['CXX'] = 'clang++'
+env.Append(CXXFLAGS = ['-Wno-c++11-extensions', '-g', '-O3'])
+env.Append(LINKFLAGS = ['-g'])
+env.Append(LIBPATH = ['/opt/local/lib'])
+env.Append(LIBS = ['boost_unit_test_framework-mt'])
+env.Append(CPPPATH = ['/opt/local/include', '/opt/local/include/eigen3', '..'])
+t = env.Program(target='test', source=[
+  'TestTagger.cpp',
+  'TestTagLibrary.cpp',
+  ])
+Default(t)

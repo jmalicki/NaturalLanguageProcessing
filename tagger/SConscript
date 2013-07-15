@@ -1,0 +1,6 @@
+
+env = Environment()
+env.Append(LIBPATH = ['/opt/local/lib'])
+env.Append(CPPPATH = ['/opt/local/include'])
+t = env.Program(target='corpus', source=['corpus.cpp'])
+Default(t)
