@@ -1,0 +1,1 @@
+SConscript(['tagger/SConscript', 'tagger/test/SConscript'])
