@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <typeinfo>
 
+#include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/test_case_template.hpp>
 #include <boost/mpl/list.hpp>
@@ -11,6 +12,11 @@
 #include "UnigramTagger.hpp"
 #include "MarkovTagger.hpp"
 #include "HMMTagger.hpp"
+
+using boost::filesystem::path;
+using boost::filesystem::absolute;
+using boost::filesystem::canonical;
+using namespace boost::unit_test::framework;
 
 typedef boost::mpl::list<UnigramTagger,
 			 MarkovTagger,
@@ -22,7 +28,12 @@ BOOST_AUTO_TEST_SUITE(test)
 BOOST_AUTO_TEST_CASE_TEMPLATE( Tagger_test, TaggerT, test_types )
 {
   //Corpus corpus("testcorpus.tsv");
-  Corpus corpus("../simplified_corpus.tsv");
+
+  path executable_path(master_test_suite().argv[0]);
+  path corpus_path(canonical(absolute(executable_path)).parent_path()
+		   .parent_path() / "simplified_corpus.tsv");
+
+  Corpus corpus(corpus_path.native().c_str());
   TaggerT tagger(corpus);
 
   vector<pair<int,string> > words;
