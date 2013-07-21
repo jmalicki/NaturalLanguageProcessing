@@ -89,7 +89,7 @@ int main(int argc, const char *argv[]) {
   Corpus testing(is, corpus.taglib);
   is.close();
 
-  if (testing.taglib != corpus.taglib) {
+  if (!testing.taglib.superset(corpus.taglib)) {
     std::cerr << "Incompatible corpuses!" << std::endl;
     return 1;
   }

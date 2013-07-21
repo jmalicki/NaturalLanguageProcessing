@@ -38,6 +38,12 @@ public:
     return !(*this == that);
   }
 
+  virtual bool superset(const TagLibrary& that) {
+    return tags.size() >= that.tags.size()
+      && equal(that.tags.get<1>().begin(), that.tags.get<1>().end(),
+	       tags.get<1>().begin());
+  }
+
   virtual int tagNum(const std::string& s) {
     typedef tag_container::nth_index<0>::type::iterator i0;
     typedef tag_container::nth_index<1>::type::iterator i1;
