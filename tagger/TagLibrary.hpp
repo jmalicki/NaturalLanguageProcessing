@@ -34,6 +34,10 @@ public:
 	       that.tags.get<1>().begin());
   }
 
+  virtual bool operator!=(const TagLibrary& that) {
+    return !(*this == that);
+  }
+
   virtual int tagNum(const std::string& s) {
     typedef tag_container::nth_index<0>::type::iterator i0;
     typedef tag_container::nth_index<1>::type::iterator i1;
