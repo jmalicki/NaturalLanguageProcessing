@@ -50,7 +50,10 @@ protected:
       assert(sum > 0);
       for (size_t row = 0; row < counts.rows(); row++) {
 	probs(row, col) = counts(row, col) / sum;
+	// NaN != NaN, this tests that it's not NaN
 	assert(probs(row, col) == probs(row, col));
+	assert(probs(row, col) >= 0);
+	assert(probs(row, col) <= 1);
       }
     }
   }
