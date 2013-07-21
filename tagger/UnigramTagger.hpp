@@ -60,6 +60,8 @@ public:
       updateSentenceCounts(tagcounts, *sentence);
   }
 
+  virtual ~UnigramTagger() {}
+
   virtual void tag(vector<pair<int, string> >& words) const {
     for (pair<int, string>& word : words) {
 	string loweredWord(word.second.size(), '\0');

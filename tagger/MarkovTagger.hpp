@@ -85,6 +85,8 @@ public:
     countsToProbs(tagprobs, tagcounts);
   }
 
+  virtual ~MarkovTagger() {}
+
   // This tag doesn't use Viterbi, just the most likely at each phase.
   virtual void tag(vector<pair<int, string> >& words) const {
     VectorXd state(tagprobs.cols());
@@ -105,6 +107,8 @@ class ViterbiMarkovTagger : public MarkovTagger
 {
 public:
   ViterbiMarkovTagger(const Corpus& corpus) : MarkovTagger(corpus) {}
+
+  virtual ~ViterbiMarkovTagger() {}
 
   virtual void tag(vector<pair<int, string> >& words) const {
     MatrixXd viterbi(MatrixXd::Constant(tagprobs.cols(), words.size()+1,

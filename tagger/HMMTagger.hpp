@@ -100,6 +100,8 @@ public:
     invertWordProbability();
   }
 
+  virtual ~HMMTagger() {}
+
   virtual void tag(vector<pair<int, string> >& words) const {
     MatrixXd viterbi(MatrixXd::Constant(tagprobs.cols(), words.size()+1,
 					-std::numeric_limits<double>::infinity()
