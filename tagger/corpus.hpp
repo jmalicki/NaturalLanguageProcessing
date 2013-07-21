@@ -1,8 +1,7 @@
 
 #pragma once
 
-#include <iostream>
-#include <fstream>
+#include <istream>
 #include <memory>
 #include <set>
 #include <string>
@@ -15,7 +14,7 @@
 using std::set;
 using std::pair;
 using std::vector;
-using std::ifstream;
+using std::istream;
 using std::getline;
 using std::string;
 
@@ -29,7 +28,7 @@ class Sentence {
 public:
   vector<pair<Tag, string> > words;
 public:
-  Sentence(ifstream& is, TagLibrary& taglib) {
+  Sentence(istream& is, TagLibrary& taglib) {
     while (is.good()) {
       string line;
       getline(is, line);
@@ -56,12 +55,10 @@ public:
   TagLibrary taglib;
 
 public:
-  Corpus(const char *filename) {
-    ifstream is(filename);
+  Corpus(istream& is) {
     while (is.good()) {
       sentences.insert(shared_ptr<Sentence>(new Sentence(is, taglib)));
     }
-    is.close();
   }
 
   size_t size() const {

@@ -1,6 +1,9 @@
 #define BOOST_TEST_DYN_LINK
 
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include <typeinfo>
 
 #include <boost/filesystem.hpp>
@@ -24,8 +27,17 @@ typedef boost::mpl::list<UnigramTagger,
 			 HMMTagger
 			 > test_types;
 
-BOOST_AUTO_TEST_SUITE(test)
-BOOST_AUTO_TEST_CASE_TEMPLATE( Tagger_test, TaggerT, test_types )
+BOOST_AUTO_TEST_SUITE(Tagger_test)
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( basic, TaggerT, test_types )
+{
+  std::string s;
+  std::stringstream ss(s);
+  Corpus corpus(ss);
+  TaggerT tagger(corpus);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( train_tag, TaggerT, test_types )
 {
   //Corpus corpus("testcorpus.tsv");
 
@@ -33,7 +45,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( Tagger_test, TaggerT, test_types )
   path corpus_path(canonical(absolute(executable_path)).parent_path()
 		   .parent_path() / "simplified_corpus.tsv");
 
-  Corpus corpus(corpus_path.native().c_str());
+  std::ifstream is;
+  is.exceptions(std::ios::failbit | std::ios::badbit);
+  is.open(corpus_path.native().c_str());
+  is.exceptions(std::ios::goodbit);
+
+  Corpus corpus(is);
+  is.close();
+
   TaggerT tagger(corpus);
 
   vector<pair<int,string> > words;
