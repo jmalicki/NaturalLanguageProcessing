@@ -65,12 +65,13 @@ protected:
 
 public:
   MarkovTagger() {}
+  MarkovTagger(const TagLibrary& taglib) : Tagger(taglib) {}
 
-  MarkovTagger(const Corpus& corpus) :
-    tagcounts(corpus.taglib.size()+2, corpus.taglib.size()+2),
-    tagprobs(corpus.taglib.size()+2, corpus.taglib.size()+2) {
+  MarkovTagger(const Corpus& corpus) : Tagger(corpus.taglib),
+    tagcounts(taglib.size()+2, taglib.size()+2),
+    tagprobs(taglib.size()+2, taglib.size()+2) {
 
-    initCounts(tagcounts, corpus.taglib.size()+2);
+    initCounts(tagcounts, taglib.size()+2);
 
     // Note some of the above transitions are a priori impossible
     // (i.e. around the initial and final states), but they should be

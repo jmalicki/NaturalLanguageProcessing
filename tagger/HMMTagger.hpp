@@ -76,8 +76,9 @@ public:
   }
 
   HMMTagger() : MarkovTagger() {}
+  HMMTagger(const TagLibrary& taglib) : MarkovTagger(taglib) {}
 
-  HMMTagger(const Corpus& corpus) : MarkovTagger() {
+  HMMTagger(const Corpus& corpus) : MarkovTagger(corpus.taglib) {
 
     initCounts(tagcounts, corpus.taglib.size()+2);
     tagprobs = tagprobs.Zero(corpus.taglib.size()+2,
