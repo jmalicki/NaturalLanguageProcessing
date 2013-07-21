@@ -25,11 +25,11 @@ class HMMTagger : public MarkovTagger {
 public:
   UnigramTagger::tagcount_t wordTagCounts;
   typedef map<string, VectorXd> wordtagprob_t;
-  wordtagprob_t wordTagProbs;
+  wordtagprob_t wordTagProbs; // in log-space
 
 public:
 
-  double getEmitProb(const string& word, int state) const {
+  double getEmitLogProb(const string& word, int state) const {
     wordtagprob_t::const_iterator i = wordTagProbs.find(word);
     if (i == wordTagProbs.end())
       i = wordTagProbs.find("");
@@ -58,7 +58,12 @@ public:
 				       &marginalCounts[0]+marginalCounts.size(),
 				       0);
 
-    VectorXd marginalTagProb(marginalCounts.cast<double>() / total_obs);
+    VectorXd marginalTagProb(marginalCounts.cast<double>().array().log() -
+			     log(total_obs));
+
+    for (size_t i = 0; i < marginalTagProb.size(); i++) {
+      assert(marginalTagProb(i) <= 0);
+    }
 
     for (const pair<string, VectorXi>& wordCount : wordTagCounts) {
       double word_obs = std::accumulate(&wordCount.second[0],
@@ -67,11 +72,15 @@ public:
       
       // P(word) = word_obs / total_obs
       // P(tag|word) = Count(tag|word)/word_obs
-      // P(tag|word|*P(word) = Count(tag|word) / total_obs
-      wordTagProbs[wordCount.first] = VectorXd(wordCount.second.cast<double>()
-					       / total_obs);
-      for (size_t i = 0; i < wordTagProbs[wordCount.first].size(); i++) {
-	wordTagProbs[wordCount.first] /= marginalTagProb[i];
+      // P(tag|word)*P(word) = Count(tag|word) / total_obs
+      VectorXd thisWordTagProb(wordCount.second.cast<double>().array().log()
+			       - log(total_obs));
+      thisWordTagProb -= marginalTagProb;
+
+      wordTagProbs[wordCount.first] = thisWordTagProb;
+
+      for (size_t i = 0; i < thisWordTagProb.size(); i++) {
+	assert(thisWordTagProb(i) <= 0);
       }
     }
   }
@@ -111,6 +120,7 @@ public:
 
     for (size_t statenum = 1; statenum < tagprobs.cols(); statenum++) {
       viterbi(statenum, 0) = log(tagprobs(statenum, 0));
+      assert(viterbi(statenum, 0) <= 0);
       // For ease of iteration, apply emission probabilities only in
       // update step.
     }
@@ -118,18 +128,35 @@ public:
     int t = 0;
     for (pair<int, string> word : words) {      
       for (size_t statenum = 1; statenum < tagprobs.cols(); statenum++) {
-	double max = 0;
+	double max = -std::numeric_limits<double>::infinity();
 	size_t max_backpointer = 0;
 	// We already looked at the initial time above, which is the
 	// only time that can have the initial state, so laststate
 	// will always be something else.
 	for (size_t laststate = 1; laststate < tagprobs.cols() - 1; laststate++) {
-	  double thisval = -std::numeric_limits<double>::infinity();
-
 	  // lastState-1 is because initial and final states don't emit.
-	  thisval = viterbi(laststate, t)
-	    + log(tagprobs(statenum, laststate))
-	    + log(getEmitProb(word.second, laststate-1));
+	  double thisval = viterbi(laststate, t);
+	  double logtransprob = log(tagprobs(statenum, laststate));
+	  double logemitprob = getEmitLogProb(word.second, laststate-1);
+	  if (thisval > 0) {
+	    std::cerr << "Viterbi logprob > 0 at iteration " << t
+		      << "!  Value " << thisval << std::endl;
+	    throw 0;
+	  }
+
+	  if (logtransprob > 0) {
+	    std::cerr << "Transition logprob > 0 at iteration " << t
+		      << "!  Value " << logtransprob << std::endl;
+	    throw 0;
+	  }
+
+	  if (logemitprob > 0) {
+	    std::cerr << "Emission logprob > 0 at iteration " << t
+		      << "!  Value " << logemitprob << std::endl;
+	    throw 0;
+	  }
+
+	  thisval += logtransprob + logemitprob;
 
 	  if (thisval > max) {
 	    max = thisval;
