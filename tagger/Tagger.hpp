@@ -16,6 +16,6 @@ public:
 
   virtual ~Tagger() {}
 
-  virtual void tag(vector<std::pair<int, std::string> >& words) const = 0;
+  virtual void tag(std::vector<std::pair<int, std::string> >& words) const = 0;
 };
 
