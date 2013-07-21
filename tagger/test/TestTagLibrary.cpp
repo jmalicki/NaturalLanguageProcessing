@@ -3,10 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "corpus.hpp"
+#include "TagLibrary.hpp"
 
-BOOST_AUTO_TEST_SUITE(test)
-BOOST_AUTO_TEST_CASE( TagLibrary_test )
+BOOST_AUTO_TEST_SUITE( TagLibrary_test )
+BOOST_AUTO_TEST_CASE( basic )
 {
   TagLibrary t;
 
@@ -21,5 +21,5 @@ BOOST_AUTO_TEST_CASE( TagLibrary_test )
   BOOST_CHECK_EQUAL( t.tagNum("baz"), 2 );
   BOOST_CHECK_EQUAL( t.size(), 3 );
 }
-BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_AUTO_TEST_SUITE_END()
