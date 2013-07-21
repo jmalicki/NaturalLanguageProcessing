@@ -5,7 +5,7 @@
 #include <boost/program_options.hpp>
 
 #include "corpus.hpp"
-#include "HMMTagger.hpp"
+#include "TaggerFactory.hpp"
 
 namespace po = boost::program_options;
 
@@ -41,6 +41,7 @@ int main(int argc, const char *argv[]) {
     ("training", po::value<string>(), "training corpus filename")
     ("testing", po::value<string>(), "testing corpus filename")
     ("output", po::value<string>(), "output file")
+    ("tagger", po::value<string>()->default_value("HMMTagger"), "Tagger class")
     ;
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -75,8 +76,8 @@ int main(int argc, const char *argv[]) {
 
   std::cout << "Loaded " << corpus.size() << " sentences." << std::endl;
 
-  HMMTagger tagger(corpus);
-  std::cout << "Trained HMM." << std::endl;
+  shared_ptr<Tagger> tagger = taggerFactory(vm["tagger"].as<string>(), corpus);
+  std::cout << "Trained " << vm["tagger"].as<string>() << std::endl;
 
   is.exceptions(std::ios_base::failbit | std::ios_base::badbit);
   try {
@@ -107,7 +108,7 @@ int main(int argc, const char *argv[]) {
     }
   }
 
-  double error = do_tagging(tagger, testing, output);
+  double error = do_tagging(*tagger, testing, output);
   std::cout << "Error on testing set: " << error << std::endl;
   return 0;
 }

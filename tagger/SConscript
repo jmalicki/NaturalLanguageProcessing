@@ -7,5 +7,6 @@ env.Append(LIBPATH = ['/opt/local/lib'])
 env.Append(LIBS = ['boost_program_options-mt'])
 env.Append(CPPPATH = ['/opt/local/include', '/opt/local/include/eigen3'])
 corpus = env.Program(target='corpus', source=['corpus.cpp'])
-tagger = env.Program(target='tagger', source=['tagger.cpp'])
+tagger = env.Program(target='tagger',
+       source=['tagger.cpp', 'TaggerFactory.cpp'])
 Default([corpus, tagger])
