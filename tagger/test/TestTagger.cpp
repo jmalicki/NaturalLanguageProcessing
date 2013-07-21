@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( train_tag, TaggerT, test_types )
 
   path executable_path(master_test_suite().argv[0]);
   path corpus_path(canonical(absolute(executable_path)).parent_path()
-		   .parent_path() / "simplified_corpus.tsv");
+		   .parent_path() / "simplified_testcorpus.tsv");
 
   std::ifstream is;
   is.exceptions(std::ios::failbit | std::ios::badbit);
