@@ -3,7 +3,6 @@
 
 #include <istream>
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -11,7 +10,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/algorithm/string.hpp>
 
-using std::set;
 using std::pair;
 using std::vector;
 using std::istream;
@@ -28,6 +26,8 @@ class Sentence {
 public:
   vector<pair<Tag, string> > words;
 public:
+  Sentence(const Sentence& that) : words(that.words) {}
+
   Sentence(istream& is, TagLibrary& taglib) {
     while (is.good()) {
       string line;
@@ -44,6 +44,8 @@ public:
     }
   }
 
+  virtual ~Sentence() {}
+
   size_t size() const {
     return words.size();
   }
@@ -51,15 +53,30 @@ public:
 
 class Corpus {
 public:
-  set<shared_ptr<Sentence> > sentences;
+  vector<shared_ptr<Sentence> > sentences;
   TagLibrary taglib;
 
 public:
   Corpus(istream& is) {
     while (is.good()) {
-      sentences.insert(shared_ptr<Sentence>(new Sentence(is, taglib)));
+      sentences.push_back(shared_ptr<Sentence>(new Sentence(is, taglib)));
     }
   }
+
+  Corpus(istream& is, const TagLibrary& thatTaglib) : taglib(thatTaglib) {
+    while (is.good()) {
+      sentences.push_back(shared_ptr<Sentence>(new Sentence(is, taglib)));
+    }
+  }
+
+  Corpus(const Corpus& that) : taglib(that.taglib) {
+    // Deep copy so that we may modify pairs.
+    for (const shared_ptr<Sentence>& sentence : that.sentences) {
+      sentences.push_back(shared_ptr<Sentence>(new Sentence(*sentence)));
+    }
+  }
+
+  virtual ~Corpus() {}
 
   size_t size() const {
     return sentences.size();
