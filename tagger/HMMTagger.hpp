@@ -80,11 +80,11 @@ public:
 
   HMMTagger(const Corpus& corpus) : MarkovTagger(corpus.taglib) {
 
-    initCounts(tagcounts, corpus.taglib.size()+2);
-    tagprobs = tagprobs.Zero(corpus.taglib.size()+2,
-			     corpus.taglib.size()+2);
+    initCounts(tagcounts, taglib.size()+2);
+    tagprobs = tagprobs.Zero(taglib.size()+2,
+			     taglib.size()+2);
 
-    UnigramTagger::newvec(wordTagCounts, "", corpus.taglib.size()); // for all words
+    UnigramTagger::newvec(wordTagCounts, "", taglib.size()); // for all words
 
     // Apply Laplace smoothing, to account for out-of-vocabulary words.
     VectorXi& nullCounts = wordTagCounts[""];
