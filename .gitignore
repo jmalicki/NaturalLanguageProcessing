@@ -11,3 +11,10 @@
 *.lai
 *.la
 *.a
+
+# Output executables
+tagger/test/test
+tagger/corpus
+
+# Scons db
+.sconsign.dblite
