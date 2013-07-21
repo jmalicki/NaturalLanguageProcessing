@@ -3,6 +3,9 @@
 *.lo
 *.o
 
+# Backup files
+*~
+
 # Compiled Dynamic libraries
 *.so
 *.dylib
@@ -15,6 +18,7 @@
 # Output executables
 tagger/test/test
 tagger/corpus
+tagger/tagger
 
 # Scons db
 .sconsign.dblite
