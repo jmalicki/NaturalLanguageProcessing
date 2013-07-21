@@ -53,6 +53,7 @@ public:
     // We can compute marginal word probabilities by summing word counts.
 
     VectorXi marginalCounts = wordTagCounts[""];
+    assert(marginalCounts.size() > 0);
     double total_obs = std::accumulate(&marginalCounts[0],
 				       &marginalCounts[0]+marginalCounts.size(),
 				       0);
